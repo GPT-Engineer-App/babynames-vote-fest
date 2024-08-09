@@ -14,7 +14,7 @@ const variants = {
 
 const fetchBabyNames = async () => {
   // Simulating API call with a larger list of names
-  return [
+  const names = [
     { id: 1, name: 'Olivia' }, { id: 2, name: 'Liam' }, { id: 3, name: 'Emma' },
     { id: 4, name: 'Noah' }, { id: 5, name: 'Ava' }, { id: 6, name: 'Sophia' },
     { id: 7, name: 'Jackson' }, { id: 8, name: 'Isabella' }, { id: 9, name: 'Lucas' },
@@ -33,6 +33,7 @@ const fetchBabyNames = async () => {
     { id: 46, name: 'Grace' }, { id: 47, name: 'Jack' }, { id: 48, name: 'Chloe' },
     { id: 49, name: 'Daniel' }, { id: 50, name: 'Penelope' }
   ];
+  return names.sort((a, b) => a.name.localeCompare(b.name));
 };
 
 const Index = () => {
