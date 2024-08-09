@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import confetti from 'canvas-confetti';
 import { Progress } from "@/components/ui/progress";
+import { useSwipeable } from 'react-swipeable';
 
 const variants = {
   initial: { opacity: 0, scale: 0.8 },
   animate: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
-  exitLike: { opacity: 0, x: 100, y: -100, rotate: 20, transition: { duration: 0.5, ease: "easeOut" } },
-  exitDislike: { opacity: 0, x: -100, y: -100, rotate: -20, transition: { duration: 0.5, ease: "easeOut" } },
+  exit: { opacity: 0, scale: 0.8, transition: { duration: 0.3 } },
 };
 
 const buttonVariants = {
@@ -46,9 +46,12 @@ const fetchBabyNames = async () => {
 const Index = () => {
   const queryClient = useQueryClient();
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
-  const [exitAnimation, setExitAnimation] = useState('');
   const [votedNameIds, setVotedNameIds] = useState([]);
   const [progress, setProgress] = useState(0);
+  const cardRef = useRef(null);
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-150, 0, 150], [-30, 0, 30]);
+  const opacity = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
 
   useEffect(() => {
     const votedNames = JSON.parse(localStorage.getItem('votedNames') || '[]');
@@ -76,26 +79,34 @@ const Index = () => {
         votedNames.push(vote);
       }
       localStorage.setItem('votedNames', JSON.stringify(votedNames));
-      // Dispatch a storage event to notify other tabs/windows
       window.dispatchEvent(new Event('storage'));
       queryClient.invalidateQueries('votedNames');
       setVotedNameIds(prevIds => [...prevIds, vote.id]);
-
-      setTimeout(() => {
-        setCurrentNameIndex(0);
-        setExitAnimation('');
-      }, 200);
+      setCurrentNameIndex(prevIndex => prevIndex + 1);
     },
   });
 
   const handleVote = (liked) => {
     if (babyNames && babyNames[currentNameIndex]) {
-      setExitAnimation(liked ? 'exitLike' : 'exitDislike');
       voteMutation.mutate({ 
         id: babyNames[currentNameIndex].id, 
         name: babyNames[currentNameIndex].name, 
         liked 
       });
+    }
+  };
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => handleVote(false),
+    onSwipedRight: () => handleVote(true),
+    trackMouse: true
+  });
+
+  const handleDragEnd = (event, info) => {
+    if (info.offset.x > 100) {
+      handleVote(true);
+    } else if (info.offset.x < -100) {
+      handleVote(false);
     }
   };
 
@@ -130,38 +141,47 @@ const Index = () => {
         {currentName && (
           <motion.div
             key={currentName.id}
+            ref={cardRef}
+            {...handlers}
+            style={{ x, rotate, opacity }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={handleDragEnd}
             variants={variants}
             initial="initial"
             animate="animate"
-            exit={exitAnimation}
-            className="w-full max-w-md"
+            exit="exit"
+            className="w-full max-w-md cursor-grab active:cursor-grabbing"
           >
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="text-3xl text-center">{currentName.name}</CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center space-x-4">
-                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                  <Button
-                    onClick={() => handleVote(true)}
-                    className="bg-green-500 hover:bg-green-600 transition-all duration-200"
-                  >
-                    <ThumbsUp className="mr-2 h-5 w-5" /> Like
-                  </Button>
-                </motion.div>
-                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                  <Button
-                    onClick={() => handleVote(false)}
-                    className="bg-red-500 hover:bg-red-600 transition-all duration-200"
-                  >
-                    <ThumbsDown className="mr-2 h-5 w-5" /> Dislike
-                  </Button>
-                </motion.div>
+                <p className="text-center text-gray-500">Swipe right to like, left to dislike</p>
               </CardContent>
             </Card>
           </motion.div>
         )}
       </AnimatePresence>
+      <div className="mt-8 flex justify-center space-x-4">
+        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+          <Button
+            onClick={() => handleVote(false)}
+            className="bg-red-500 hover:bg-red-600 transition-all duration-200"
+          >
+            <ThumbsDown className="mr-2 h-5 w-5" /> Dislike
+          </Button>
+        </motion.div>
+        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+          <Button
+            onClick={() => handleVote(true)}
+            className="bg-green-500 hover:bg-green-600 transition-all duration-200"
+          >
+            <ThumbsUp className="mr-2 h-5 w-5" /> Like
+          </Button>
+        </motion.div>
+      </div>
       {babyNames && babyNames.length === 0 && (
         <div className="text-center mt-8">
           <h2 className="text-2xl font-bold mb-4">All names voted!</h2>
