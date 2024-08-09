@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from 'react-router-dom';
 
 const variants = {
   initial: { opacity: 0, y: 50 },
@@ -38,7 +39,12 @@ const Index = () => {
       // Simulating API call
       return Promise.resolve(vote);
     },
-    onSuccess: () => {
+    onSuccess: (vote) => {
+      const votedNames = JSON.parse(localStorage.getItem('votedNames') || '[]');
+      votedNames.push(vote);
+      localStorage.setItem('votedNames', JSON.stringify(votedNames));
+      queryClient.invalidateQueries('votedNames');
+
       setTimeout(() => {
         setCurrentNameIndex((prevIndex) => (prevIndex + 1) % babyNames.length);
         setExitAnimation('');
@@ -49,7 +55,11 @@ const Index = () => {
   const handleVote = (liked) => {
     if (babyNames && babyNames[currentNameIndex]) {
       setExitAnimation(liked ? 'exitLike' : 'exitDislike');
-      voteMutation.mutate({ nameId: babyNames[currentNameIndex].id, liked });
+      voteMutation.mutate({ 
+        id: babyNames[currentNameIndex].id, 
+        name: babyNames[currentNameIndex].name, 
+        liked 
+      });
     }
   };
 
@@ -93,6 +103,9 @@ const Index = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <Link to="/voted" className="mt-8 text-blue-500 hover:underline">
+        View Voted Names
+      </Link>
     </div>
   );
 };

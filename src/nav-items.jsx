@@ -1,5 +1,6 @@
-import { Baby } from "lucide-react";
+import { Baby, List } from "lucide-react";
 import Index from "./pages/Index.jsx";
+import VotedNames from "./pages/VotedNames.jsx";
 
 /**
  * Central place for defining the navigation items. Used for navigation components and routing.
@@ -10,5 +11,11 @@ export const navItems = [
     to: "/",
     icon: <Baby className="h-4 w-4" />,
     page: <Index />,
+  },
+  {
+    title: "Voted Names",
+    to: "/voted",
+    icon: <List className="h-4 w-4" />,
+    page: <VotedNames />,
   },
 ];
