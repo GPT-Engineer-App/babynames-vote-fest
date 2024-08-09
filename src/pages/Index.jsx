@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,11 +27,19 @@ const Index = () => {
   const queryClient = useQueryClient();
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [exitAnimation, setExitAnimation] = useState('');
+  const [votedNameIds, setVotedNameIds] = useState([]);
 
-  const { data: babyNames, isLoading, isError } = useQuery({
+  useEffect(() => {
+    const votedNames = JSON.parse(localStorage.getItem('votedNames') || '[]');
+    setVotedNameIds(votedNames.map(vote => vote.id));
+  }, []);
+
+  const { data: allBabyNames, isLoading, isError } = useQuery({
     queryKey: ['babyNames'],
     queryFn: fetchBabyNames,
   });
+
+  const babyNames = allBabyNames ? allBabyNames.filter(name => !votedNameIds.includes(name.id)) : [];
 
   const voteMutation = useMutation({
     mutationFn: (vote) => {
@@ -48,9 +56,10 @@ const Index = () => {
       }
       localStorage.setItem('votedNames', JSON.stringify(votedNames));
       queryClient.invalidateQueries('votedNames');
+      setVotedNameIds(prevIds => [...prevIds, vote.id]);
 
       setTimeout(() => {
-        setCurrentNameIndex((prevIndex) => (prevIndex + 1) % babyNames.length);
+        setCurrentNameIndex(0);
         setExitAnimation('');
       }, 500);
     },
@@ -71,6 +80,10 @@ const Index = () => {
   if (isError) return <div className="text-center mt-8">Error fetching baby names</div>;
 
   const currentName = babyNames && babyNames[currentNameIndex];
+
+  if (babyNames.length === 0) {
+    return <div className="text-center mt-8">No more names to vote on!</div>;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center">
