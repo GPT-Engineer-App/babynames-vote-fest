@@ -5,7 +5,13 @@ import { ThumbsUp, ThumbsDown } from "lucide-react";
 const VotedNames = () => {
   const { data: votedNames, isLoading, isError } = useQuery({
     queryKey: ['votedNames'],
-    queryFn: () => JSON.parse(localStorage.getItem('votedNames') || '[]'),
+    queryFn: () => {
+      const votes = JSON.parse(localStorage.getItem('votedNames') || '[]');
+      // Create a map to store the most recent vote for each name
+      const uniqueVotes = new Map();
+      votes.forEach(vote => uniqueVotes.set(vote.id, vote));
+      return Array.from(uniqueVotes.values());
+    },
   });
 
   if (isLoading) return <div className="text-center mt-8">Loading...</div>;

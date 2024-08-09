@@ -40,7 +40,12 @@ const Index = () => {
     },
     onSuccess: (vote) => {
       const votedNames = JSON.parse(localStorage.getItem('votedNames') || '[]');
-      votedNames.push(vote);
+      const existingVoteIndex = votedNames.findIndex(v => v.id === vote.id);
+      if (existingVoteIndex !== -1) {
+        votedNames[existingVoteIndex] = vote;
+      } else {
+        votedNames.push(vote);
+      }
       localStorage.setItem('votedNames', JSON.stringify(votedNames));
       queryClient.invalidateQueries('votedNames');
 
