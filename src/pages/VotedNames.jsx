@@ -17,20 +17,23 @@ const VotedNames = () => {
       {votedNames && votedNames.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {votedNames.map((vote) => (
-          <Card key={vote.id} className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-2xl">{vote.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center">
-              {vote.liked ? (
-                <ThumbsUp className="text-green-500 h-6 w-6" />
-              ) : (
-                <ThumbsDown className="text-red-500 h-6 w-6" />
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            <Card key={vote.id} className="shadow-md">
+              <CardHeader>
+                <CardTitle className="text-2xl">{vote.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex justify-center">
+                {vote.liked ? (
+                  <ThumbsUp className="text-green-500 h-6 w-6" />
+                ) : (
+                  <ThumbsDown className="text-red-500 h-6 w-6" />
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center">No voted names yet.</p>
+      )}
     </div>
   );
 };
