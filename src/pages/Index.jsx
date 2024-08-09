@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from 'react-router-dom';
 
 const variants = {
   initial: { opacity: 0, y: 50 },
@@ -69,8 +68,7 @@ const Index = () => {
   const currentName = babyNames && babyNames[currentNameIndex];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold mb-8 text-center">Baby Name Voting</h1>
+    <div className="flex flex-col items-center justify-center">
       <AnimatePresence mode="wait">
         {currentName && (
           <motion.div
@@ -103,9 +101,6 @@ const Index = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <Link to="/voted" className="mt-8 text-blue-500 hover:underline">
-        View Voted Names
-      </Link>
     </div>
   );
 };

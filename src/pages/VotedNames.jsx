@@ -12,8 +12,7 @@ const VotedNames = () => {
   if (isError) return <div className="text-center mt-8">Error fetching voted names</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-4xl font-bold mb-8 text-center">Voted Baby Names</h1>
+    <div>
       {votedNames && votedNames.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {votedNames.map((vote) => (
