@@ -4,12 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import confetti from 'canvas-confetti';
+import { Progress } from "@/components/ui/progress";
 
 const variants = {
-  initial: { opacity: 0, y: 50 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.2 } },
-  exitLike: { opacity: 0, x: 100, transition: { duration: 0.2, ease: "easeOut" } },
-  exitDislike: { opacity: 0, x: -100, transition: { duration: 0.2, ease: "easeOut" } },
+  initial: { opacity: 0, scale: 0.8 },
+  animate: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
+  exitLike: { opacity: 0, x: 100, y: -100, rotate: 20, transition: { duration: 0.5, ease: "easeOut" } },
+  exitDislike: { opacity: 0, x: -100, y: -100, rotate: -20, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
+const buttonVariants = {
+  hover: { scale: 1.1 },
+  tap: { scale: 0.95 },
 };
 
 const fetchBabyNames = async () => {
@@ -41,6 +48,7 @@ const Index = () => {
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
   const [exitAnimation, setExitAnimation] = useState('');
   const [votedNameIds, setVotedNameIds] = useState([]);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const votedNames = JSON.parse(localStorage.getItem('votedNames') || '[]');
@@ -91,6 +99,21 @@ const Index = () => {
     }
   };
 
+  useEffect(() => {
+    if (babyNames) {
+      const newProgress = ((currentNameIndex + 1) / babyNames.length) * 100;
+      setProgress(newProgress);
+
+      if (newProgress === 100) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+  }, [currentNameIndex, babyNames]);
+
   if (isLoading) return <div className="text-center mt-8">Loading...</div>;
   if (isError) return <div className="text-center mt-8">Error fetching baby names</div>;
 
@@ -102,6 +125,7 @@ const Index = () => {
 
   return (
     <div className="flex flex-col items-center justify-center">
+      <Progress value={progress} className="w-full max-w-md mb-8" />
       <AnimatePresence mode="wait">
         {currentName && (
           <motion.div
@@ -117,23 +141,33 @@ const Index = () => {
                 <CardTitle className="text-3xl text-center">{currentName.name}</CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center space-x-4">
-                <Button
-                  onClick={() => handleVote(true)}
-                  className="bg-green-500 hover:bg-green-600"
-                >
-                  <ThumbsUp className="mr-2 h-5 w-5" /> Like
-                </Button>
-                <Button
-                  onClick={() => handleVote(false)}
-                  className="bg-red-500 hover:bg-red-600"
-                >
-                  <ThumbsDown className="mr-2 h-5 w-5" /> Dislike
-                </Button>
+                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                  <Button
+                    onClick={() => handleVote(true)}
+                    className="bg-green-500 hover:bg-green-600 transition-all duration-200"
+                  >
+                    <ThumbsUp className="mr-2 h-5 w-5" /> Like
+                  </Button>
+                </motion.div>
+                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                  <Button
+                    onClick={() => handleVote(false)}
+                    className="bg-red-500 hover:bg-red-600 transition-all duration-200"
+                  >
+                    <ThumbsDown className="mr-2 h-5 w-5" /> Dislike
+                  </Button>
+                </motion.div>
               </CardContent>
             </Card>
           </motion.div>
         )}
       </AnimatePresence>
+      {babyNames && babyNames.length === 0 && (
+        <div className="text-center mt-8">
+          <h2 className="text-2xl font-bold mb-4">All names voted!</h2>
+          <p>Great job! You've voted on all the baby names.</p>
+        </div>
+      )}
     </div>
   );
 };
