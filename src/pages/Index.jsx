@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const fetchBabyNames = async () => {
   // Simulating API call
@@ -49,36 +49,38 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-8 flex flex-col items-center justify-center">
       <h1 className="text-4xl font-bold mb-8 text-center">Baby Name Voting</h1>
-      {currentName && (
-        <motion.div
-          key={currentName.id}
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -50 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md"
-        >
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-3xl text-center">{currentName.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center space-x-4">
-              <Button
-                onClick={() => handleVote(true)}
-                className="bg-green-500 hover:bg-green-600"
-              >
-                <ThumbsUp className="mr-2 h-5 w-5" /> Like
-              </Button>
-              <Button
-                onClick={() => handleVote(false)}
-                className="bg-red-500 hover:bg-red-600"
-              >
-                <ThumbsDown className="mr-2 h-5 w-5" /> Dislike
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
+      <AnimatePresence mode="wait">
+        {currentName && (
+          <motion.div
+            key={currentName.id}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-md"
+          >
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-3xl text-center">{currentName.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex justify-center space-x-4">
+                <Button
+                  onClick={() => handleVote(true)}
+                  className="bg-green-500 hover:bg-green-600"
+                >
+                  <ThumbsUp className="mr-2 h-5 w-5" /> Like
+                </Button>
+                <Button
+                  onClick={() => handleVote(false)}
+                  className="bg-red-500 hover:bg-red-600"
+                >
+                  <ThumbsDown className="mr-2 h-5 w-5" /> Dislike
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
