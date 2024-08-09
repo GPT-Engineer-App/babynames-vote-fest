@@ -68,6 +68,8 @@ const Index = () => {
         votedNames.push(vote);
       }
       localStorage.setItem('votedNames', JSON.stringify(votedNames));
+      // Dispatch a storage event to notify other tabs/windows
+      window.dispatchEvent(new Event('storage'));
       queryClient.invalidateQueries('votedNames');
       setVotedNameIds(prevIds => [...prevIds, vote.id]);
 

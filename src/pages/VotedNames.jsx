@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 const VotedNames = () => {
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+
+  const queryClient = useQueryClient();
 
   const { data: votedNames, isLoading, isError } = useQuery({
     queryKey: ['votedNames'],
@@ -18,6 +20,17 @@ const VotedNames = () => {
       return Array.from(uniqueVotes.values());
     },
   });
+
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'votedNames') {
+        queryClient.invalidateQueries('votedNames');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [queryClient]);
 
   if (isLoading) return <div className="text-center mt-8">Loading...</div>;
   if (isError) return <div className="text-center mt-8">Error fetching voted names</div>;
