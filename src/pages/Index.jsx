@@ -13,13 +13,25 @@ const variants = {
 };
 
 const fetchBabyNames = async () => {
-  // Simulating API call
+  // Simulating API call with a larger list of names
   return [
-    { id: 1, name: 'Olivia' },
-    { id: 2, name: 'Liam' },
-    { id: 3, name: 'Emma' },
-    { id: 4, name: 'Noah' },
-    { id: 5, name: 'Ava' },
+    { id: 1, name: 'Olivia' }, { id: 2, name: 'Liam' }, { id: 3, name: 'Emma' },
+    { id: 4, name: 'Noah' }, { id: 5, name: 'Ava' }, { id: 6, name: 'Sophia' },
+    { id: 7, name: 'Jackson' }, { id: 8, name: 'Isabella' }, { id: 9, name: 'Lucas' },
+    { id: 10, name: 'Mia' }, { id: 11, name: 'Ethan' }, { id: 12, name: 'Harper' },
+    { id: 13, name: 'Aiden' }, { id: 14, name: 'Amelia' }, { id: 15, name: 'Oliver' },
+    { id: 16, name: 'Evelyn' }, { id: 17, name: 'Elijah' }, { id: 18, name: 'Charlotte' },
+    { id: 19, name: 'Grayson' }, { id: 20, name: 'Abigail' }, { id: 21, name: 'Ezra' },
+    { id: 22, name: 'Emily' }, { id: 23, name: 'James' }, { id: 24, name: 'Elizabeth' },
+    { id: 25, name: 'Benjamin' }, { id: 26, name: 'Mila' }, { id: 27, name: 'Mason' },
+    { id: 28, name: 'Ella' }, { id: 29, name: 'William' }, { id: 30, name: 'Avery' },
+    { id: 31, name: 'Samuel' }, { id: 32, name: 'Sofia' }, { id: 33, name: 'Joseph' },
+    { id: 34, name: 'Camila' }, { id: 35, name: 'Henry' }, { id: 36, name: 'Aria' },
+    { id: 37, name: 'Owen' }, { id: 38, name: 'Scarlett' }, { id: 39, name: 'Dylan' },
+    { id: 40, name: 'Victoria' }, { id: 41, name: 'Wyatt' }, { id: 42, name: 'Madison' },
+    { id: 43, name: 'Carter' }, { id: 44, name: 'Luna' }, { id: 45, name: 'Sebastian' },
+    { id: 46, name: 'Grace' }, { id: 47, name: 'Jack' }, { id: 48, name: 'Chloe' },
+    { id: 49, name: 'Daniel' }, { id: 50, name: 'Penelope' }
   ];
 };
 
