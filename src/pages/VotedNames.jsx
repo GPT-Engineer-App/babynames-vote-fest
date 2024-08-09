@@ -22,14 +22,16 @@ const VotedNames = () => {
   if (isLoading) return <div className="text-center mt-8">Loading...</div>;
   if (isError) return <div className="text-center mt-8">Error fetching voted names</div>;
 
-  const filteredNames = votedNames?.filter(vote => {
-    const matchesFilter = 
-      filter === 'all' || 
-      (filter === 'liked' && vote.liked) || 
-      (filter === 'disliked' && !vote.liked);
-    const matchesSearch = vote.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const filteredNames = votedNames
+    ?.filter(vote => {
+      const matchesFilter = 
+        filter === 'all' || 
+        (filter === 'liked' && vote.liked) || 
+        (filter === 'disliked' && !vote.liked);
+      const matchesSearch = vote.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesFilter && matchesSearch;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="max-w-4xl mx-auto">
