@@ -130,7 +130,7 @@ const Index = () => {
 
   const currentName = babyNames && babyNames[currentNameIndex];
 
-  if (babyNames.length === 0) {
+  if (!currentName) {
     return <div className="text-center mt-8">No more names to vote on!</div>;
   }
 
@@ -138,31 +138,29 @@ const Index = () => {
     <div className="flex flex-col items-center justify-center">
       <Progress value={progress} className="w-full max-w-md mb-8" />
       <AnimatePresence mode="wait">
-        {currentName && (
-          <motion.div
-            key={currentName.id}
-            ref={cardRef}
-            {...handlers}
-            style={{ x, rotate, opacity }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            onDragEnd={handleDragEnd}
-            variants={variants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="w-full max-w-md cursor-grab active:cursor-grabbing"
-          >
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-3xl text-center">{currentName.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex justify-center space-x-4">
-                <p className="text-center text-gray-500">Swipe right to like, left to dislike</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+        <motion.div
+          key={currentName.id}
+          ref={cardRef}
+          {...handlers}
+          style={{ x, rotate, opacity }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={handleDragEnd}
+          variants={variants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="w-full max-w-md cursor-grab active:cursor-grabbing"
+        >
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-3xl text-center">{currentName.name}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center space-x-4">
+              <p className="text-center text-gray-500">Swipe right to like, left to dislike</p>
+            </CardContent>
+          </Card>
+        </motion.div>
       </AnimatePresence>
       <div className="mt-8 flex justify-center space-x-4">
         <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
@@ -182,12 +180,6 @@ const Index = () => {
           </Button>
         </motion.div>
       </div>
-      {babyNames && babyNames.length === 0 && (
-        <div className="text-center mt-8">
-          <h2 className="text-2xl font-bold mb-4">All names voted!</h2>
-          <p>Great job! You've voted on all the baby names.</p>
-        </div>
-      )}
     </div>
   );
 };
