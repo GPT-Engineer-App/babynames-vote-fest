@@ -5,6 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const variants = {
+  initial: { opacity: 0, y: 50 },
+  animate: { opacity: 1, y: 0 },
+  exitLike: { opacity: 0, x: 100, transition: { duration: 0.5 } },
+  exitDislike: { opacity: 0, x: -100, transition: { duration: 0.5 } },
+};
+
 const fetchBabyNames = async () => {
   // Simulating API call
   return [
@@ -19,6 +26,7 @@ const fetchBabyNames = async () => {
 const Index = () => {
   const queryClient = useQueryClient();
   const [currentNameIndex, setCurrentNameIndex] = useState(0);
+  const [exitAnimation, setExitAnimation] = useState('');
 
   const { data: babyNames, isLoading, isError } = useQuery({
     queryKey: ['babyNames'],
@@ -31,12 +39,16 @@ const Index = () => {
       return Promise.resolve(vote);
     },
     onSuccess: () => {
-      setCurrentNameIndex((prevIndex) => (prevIndex + 1) % babyNames.length);
+      setTimeout(() => {
+        setCurrentNameIndex((prevIndex) => (prevIndex + 1) % babyNames.length);
+        setExitAnimation('');
+      }, 500);
     },
   });
 
   const handleVote = (liked) => {
     if (babyNames && babyNames[currentNameIndex]) {
+      setExitAnimation(liked ? 'exitLike' : 'exitDislike');
       voteMutation.mutate({ nameId: babyNames[currentNameIndex].id, liked });
     }
   };
@@ -53,10 +65,10 @@ const Index = () => {
         {currentName && (
           <motion.div
             key={currentName.id}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            transition={{ duration: 0.5 }}
+            variants={variants}
+            initial="initial"
+            animate="animate"
+            exit={exitAnimation}
             className="w-full max-w-md"
           >
             <Card className="shadow-lg">
